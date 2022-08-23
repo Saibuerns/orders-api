@@ -25,6 +25,4 @@ func NewController(orderService orderService) (*Controller, error) {
 	return &Controller{
 		orderService: orderService,
 	}, nil
-
-	// test push commit
 }
