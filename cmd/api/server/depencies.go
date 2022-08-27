@@ -31,7 +31,7 @@ func resolveOrderController() orderController.Controller {
 }
 
 func resolveOrderService() orderService.Service {
-	s, err := orderService.NewService(resolveOrderRepository(), resolveAddressRepository(), nil, nil)
+	s, err := orderService.NewService(resolveOrderRepository(), resolveAddressRepository())
 	if err != nil {
 		log.Panicf("error handled while creating order service instance: %v", err)
 	}
