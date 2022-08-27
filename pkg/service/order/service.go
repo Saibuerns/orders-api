@@ -12,44 +12,28 @@ type (
 	orderRepository interface {
 		Save(context.Context, *domain.Order) error
 	}
-	clientRepository interface {
-		Get(context.Context, domain.ClientID) (*domain.Client, error)
-	}
 	addressRepository interface {
 		GetByHash(context.Context, string) (*domain.Address, error)
 		Save(context.Context, *domain.Address) (*domain.Address, error)
 	}
-	productRepository interface {
-		GetByIDs(context.Context, []domain.ProductID) ([]domain.Product, error)
-	}
 
 	Service struct {
 		orderRepo   orderRepository
-		clientRepo  clientRepository
 		addressRepo addressRepository
-		productRepo productRepository
 	}
 )
 
-func NewService(or orderRepository, ar addressRepository, pr productRepository, cr clientRepository) (*Service, error) {
+func NewService(or orderRepository, ar addressRepository) (*Service, error) {
 	if or == nil {
 		return nil, errors.New("order repository can't be nil")
 	}
 	if ar == nil {
 		return nil, errors.New("address repository can't be nil")
 	}
-	if pr == nil {
-		return nil, errors.New("product repository can't be nil")
-	}
-	if cr == nil {
-		return nil, errors.New("client repository can't be nil")
-	}
 
 	return &Service{
 		orderRepo:   or,
-		clientRepo:  cr,
 		addressRepo: ar,
-		productRepo: pr,
 	}, nil
 }
 
