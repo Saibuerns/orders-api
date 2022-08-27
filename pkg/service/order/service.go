@@ -17,7 +17,7 @@ type (
 	}
 	addressRepository interface {
 		GetByHash(context.Context, string) (*domain.Address, error)
-		Save(context.Context, domain.Address) (*domain.Address, error)
+		Save(context.Context, *domain.Address) (*domain.Address, error)
 	}
 	productRepository interface {
 		GetByIDs(context.Context, []domain.ProductID) ([]domain.Product, error)
@@ -31,18 +31,18 @@ type (
 	}
 )
 
-func NewService(or orderRepository, cr clientRepository, ar addressRepository, pr productRepository) (*Service, error) {
+func NewService(or orderRepository, ar addressRepository, pr productRepository, cr clientRepository) (*Service, error) {
 	if or == nil {
 		return nil, errors.New("order repository can't be nil")
-	}
-	if cr == nil {
-		return nil, errors.New("client repository can't be nil")
 	}
 	if ar == nil {
 		return nil, errors.New("address repository can't be nil")
 	}
 	if pr == nil {
 		return nil, errors.New("product repository can't be nil")
+	}
+	if cr == nil {
+		return nil, errors.New("client repository can't be nil")
 	}
 
 	return &Service{
@@ -69,7 +69,7 @@ func (s Service) getAddress(ctx context.Context, address domain.Address) (*domai
 	savedAddress, err := s.addressRepo.GetByHash(ctx, address.Hash())
 	if err != nil {
 		if errors.As(err, &apiErrors.NotFoundError{}) {
-			return s.addressRepo.Save(ctx, address)
+			return s.addressRepo.Save(ctx, &address)
 		}
 		return nil, err
 	}
