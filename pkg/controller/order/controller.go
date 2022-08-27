@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 
+	"github.com/gin-gonic/gin"
+	"orders.api/pkg/controller/order/dto"
 	"orders.api/pkg/domain"
 )
 
 type (
 	orderService interface {
-		Save(context.Context, domain.Order) error
+		CreateOrder(context.Context, *domain.Order) error
 	}
 
 	Controller struct {
@@ -25,4 +27,22 @@ func NewController(orderService orderService) (*Controller, error) {
 	return &Controller{
 		orderService: orderService,
 	}, nil
+}
+
+func (c Controller) Post(ctx *gin.Context) {
+	postRequest := &dto.PostRequest{}
+	if err := ctx.BindJSON(postRequest); err != nil {
+		ctx.JSON(400, errors.New("invalid body"))
+	}
+
+	order, err := postRequest.ToOrder()
+	if err != nil {
+		ctx.JSON(400, err)
+	}
+
+	if err := c.orderService.CreateOrder(ctx.Request.Context(), order); err != nil {
+		ctx.JSON(500, err)
+	}
+
+	ctx.JSON(201, "order created")
 }

@@ -6,9 +6,9 @@ type OrderID uint
 
 type Order struct {
 	ID             OrderID
-	ClientID       ClientID
-	Date           time.Time
+	Client         Client
 	DeliverDate    time.Time
 	DeliverAddress Address
 	Products       []Product
+	DateCreated    time.Time
 }
