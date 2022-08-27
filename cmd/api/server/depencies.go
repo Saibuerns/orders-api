@@ -7,10 +7,20 @@ import (
 	"github.com/go-sql-driver/mysql"
 
 	orderController "orders.api/pkg/controller/order"
+	productController "orders.api/pkg/controller/product"
 	addressRepository "orders.api/pkg/repository/address"
 	orderRepository "orders.api/pkg/repository/order"
+	productRepository "orders.api/pkg/repository/product"
 	orderService "orders.api/pkg/service/order"
 )
+
+func resolveProductController() productController.Controller {
+	c, err := productController.NewController(resolveProductRepository())
+	if err != nil {
+		log.Panicf("error handled while creating product controller instance: %v", err)
+	}
+	return *c
+}
 
 func resolveOrderController() orderController.Controller {
 	c, err := orderController.NewController(resolveOrderService())
@@ -40,6 +50,14 @@ func resolveAddressRepository() addressRepository.Repository {
 	r, err := addressRepository.NewRepository(resolveMySQLClient())
 	if err != nil {
 		log.Panicf("error handled while creating address repository instance: %v", err)
+	}
+	return *r
+}
+
+func resolveProductRepository() productRepository.Repository {
+	r, err := productRepository.NewRepository(resolveMySQLClient())
+	if err != nil {
+		log.Panicf("error handled while creating product repository instance: %v", err)
 	}
 	return *r
 }
