@@ -7,6 +7,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 
 	orderController "orders.api/pkg/controller/order"
+	addressRepository "orders.api/pkg/repository/address"
 	orderRepository "orders.api/pkg/repository/order"
 	orderService "orders.api/pkg/service/order"
 )
@@ -14,15 +15,15 @@ import (
 func resolveOrderController() orderController.Controller {
 	c, err := orderController.NewController(resolveOrderService())
 	if err != nil {
-		log.Panicf("error handled while creating instances: %v", err)
+		log.Panicf("error handled while creating order controller instance: %v", err)
 	}
 	return *c
 }
 
 func resolveOrderService() orderService.Service {
-	s, err := orderService.NewService(resolveOrderRepository(), nil, nil, nil)
+	s, err := orderService.NewService(resolveOrderRepository(), resolveAddressRepository(), nil, nil)
 	if err != nil {
-		log.Panicf("error handled while creating instances: %v", err)
+		log.Panicf("error handled while creating order service instance: %v", err)
 	}
 	return *s
 }
@@ -30,7 +31,15 @@ func resolveOrderService() orderService.Service {
 func resolveOrderRepository() orderRepository.Repository {
 	r, err := orderRepository.NewRepository(resolveMySQLClient())
 	if err != nil {
-		log.Panicf("error handled while creating instances: %v", err)
+		log.Panicf("error handled while creating order repository instance: %v", err)
+	}
+	return *r
+}
+
+func resolveAddressRepository() addressRepository.Repository {
+	r, err := addressRepository.NewRepository(resolveMySQLClient())
+	if err != nil {
+		log.Panicf("error handled while creating address repository instance: %v", err)
 	}
 	return *r
 }

@@ -22,15 +22,23 @@ func (dd deliverDate) isValid() bool {
 type deliverAddress struct {
 	StreetName   string `json:"street_name"`
 	StreetNumber string `json:"street_number"`
+	Floor        string `json:"floor,omitempty"`
+	Appartment   string `json:"appartment,omitempty"`
 	Comments     string `json:"comment,omitempty"`
 }
 
 func (da deliverAddress) toAddress() (*domain.Address, error) {
 	da.StreetName = strings.TrimSpace(da.StreetName)
 	da.StreetNumber = strings.TrimSpace(da.StreetNumber)
+	da.Floor = strings.TrimSpace(da.Floor)
+	da.Appartment = strings.TrimSpace(da.Appartment)
 
 	if len(da.StreetName) > 0 && len(da.StreetNumber) > 0 {
 		return nil, errors.New("invalid deliver address")
+	}
+	if (len(da.Floor) > 0 && len(da.Appartment) == 0) ||
+		(len(da.Floor) == 0 && len(da.Appartment) > 0) {
+		return nil, errors.New("invalid floor-appartment combination")
 	}
 
 	return &domain.Address{
